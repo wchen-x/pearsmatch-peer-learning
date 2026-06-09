@@ -1,6 +1,9 @@
 package com.pearsmatch.backend.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,10 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pearsmatch.backend.dto.AddUserSkillRequest;
+import com.pearsmatch.backend.dto.MatchResponse;
 import com.pearsmatch.backend.dto.UpdateProfileRequest;
 import com.pearsmatch.backend.dto.UserResponse;
 import com.pearsmatch.backend.dto.UserSkillResponse;
 import com.pearsmatch.backend.model.Skill;
+import com.pearsmatch.backend.model.SkillType;
 import com.pearsmatch.backend.model.User;
 import com.pearsmatch.backend.model.UserSkill;
 import com.pearsmatch.backend.repository.SkillRepository;
@@ -115,6 +120,42 @@ public class UserController {
         return userSkillRepository.findByUser(user)
             .stream()
             .map(UserSkillResponse::new)
+            .toList();
+    }
+
+    @GetMapping("/matches")
+    public List<MatchResponse> getMatches(@RequestHeader("Authorization") String authHeader) {
+        User currentUser = getUserFromAuthHeader(authHeader);
+
+        List<UserSkill> skillsToLearn = userSkillRepository.findByUserAndType(
+            currentUser,
+            SkillType.LEARN
+        );
+
+        Map<User, List<String>> matchedUsers = new HashMap<>();
+
+        for (UserSkill learnSkill : skillsToLearn) {
+            List<UserSkill> teachers = userSkillRepository.findBySkillAndType(
+                learnSkill.getSkill(),
+                SkillType.TEACH
+            );
+
+            for (UserSkill teacherSkill : teachers) {
+                User teacher = teacherSkill.getUser();
+
+                if (teacher.getId().equals(currentUser.getId())) {
+                    continue;
+                }
+
+                matchedUsers
+                    .computeIfAbsent(teacher, key -> new ArrayList<>())
+                    .add(learnSkill.getSkill().getName());
+            }
+        }
+
+        return matchedUsers.entrySet()
+            .stream()
+            .map(entry -> new MatchResponse(entry.getKey(), entry.getValue()))
             .toList();
     }
 }
