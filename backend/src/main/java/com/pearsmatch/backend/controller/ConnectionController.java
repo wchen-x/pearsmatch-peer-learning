@@ -135,4 +135,15 @@ public class ConnectionController {
 
         return new ConnectionResponse(savedConnection);
     }
+
+    @GetMapping("/accepted")
+    public List<ConnectionResponse> getAcceptedConnections(@RequestHeader("Authorization") String authHeader) {
+        User user = getUserFromAuthHeader(authHeader);
+
+        return connectionRepository.findBySenderOrReceiver(user, user)
+            .stream()
+            .filter(connection -> connection.getStatus() == ConnectionStatus.ACCEPTED)
+            .map(ConnectionResponse::new)
+            .toList();
+    }
 }
