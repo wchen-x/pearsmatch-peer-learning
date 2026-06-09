@@ -1,10 +1,14 @@
 package com.pearsmatch.backend.controller;
 
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.pearsmatch.backend.dto.AuthResponse;
 import com.pearsmatch.backend.dto.LoginRequest;
 import com.pearsmatch.backend.dto.RegisterRequest;
-import com.pearsmatch.backend.dto.UserResponse;
 import com.pearsmatch.backend.service.AuthService;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -17,12 +21,12 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public UserResponse register(@RequestBody RegisterRequest request) {
+    public AuthResponse register(@RequestBody RegisterRequest request) {
         return authService.register(request);
     }
 
     @PostMapping("/login")
-    public UserResponse login(@RequestBody LoginRequest request) {
+    public AuthResponse login(@RequestBody LoginRequest request) {
         return authService.login(request);
     }
 }

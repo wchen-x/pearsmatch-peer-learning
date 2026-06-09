@@ -1,10 +1,20 @@
 package com.pearsmatch.backend.controller;
 
-import com.pearsmatch.backend.model.*;
-import com.pearsmatch.backend.repository.*;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.pearsmatch.backend.model.Skill;
+import com.pearsmatch.backend.model.SkillLevel;
+import com.pearsmatch.backend.model.SkillType;
+import com.pearsmatch.backend.model.User;
+import com.pearsmatch.backend.model.UserSkill;
+import com.pearsmatch.backend.repository.SkillRepository;
+import com.pearsmatch.backend.repository.UserRepository;
+import com.pearsmatch.backend.repository.UserSkillRepository;
 
 @RestController
 @RequestMapping("/api/test")
