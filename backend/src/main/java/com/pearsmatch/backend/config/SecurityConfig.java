@@ -23,7 +23,8 @@ public class SecurityConfig {
                     "/api/me",
                     "/api/me/skills",
                     "/api/me/skills/**",
-                    "/api/matches"
+                    "/api/matches",
+                    "/api/connections/**"
                 ).permitAll()
                 .anyRequest().authenticated()
             )
