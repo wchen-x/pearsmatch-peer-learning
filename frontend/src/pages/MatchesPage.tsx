@@ -22,6 +22,7 @@ export default function MatchesPage() {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [requestingUserId, setRequestingUserId] = useState<number | null>(null);
+  const [requestedUserIds, setRequestedUserIds] = useState<number[]>([]);
 
   useEffect(() => {
     async function loadMatches() {
@@ -49,9 +50,18 @@ export default function MatchesPage() {
       });
 
       setMessage("Connection request sent.");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to send request");
-    } finally {
+      setRequestedUserIds((currentIds) => [...currentIds, userId]);
+    } 
+    catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to send request";
+
+      if (message.includes("Connection request already exists")) {
+        setError("You already sent this user a connection request.");
+      } else {
+        setError(message);
+      }
+    } 
+    finally {
       setRequestingUserId(null);
     }
   }
@@ -91,7 +101,10 @@ export default function MatchesPage() {
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
-          {matches.map((match) => (
+          {matches.map((match) => {
+          const hasRequested = requestedUserIds.includes(match.userId);
+
+          return (
             <div key={match.userId} className="rounded-2xl bg-white p-6 shadow-sm">
               <h2 className="text-xl font-semibold">{match.name}</h2>
 
@@ -124,15 +137,18 @@ export default function MatchesPage() {
 
               <button
                 onClick={() => sendRequest(match.userId)}
-                disabled={requestingUserId === match.userId}
+                disabled={requestingUserId === match.userId || hasRequested}
                 className="mt-5 rounded-lg bg-green-600 px-4 py-2 font-medium text-white disabled:opacity-60"
               >
-                {requestingUserId === match.userId
-                  ? "Sending..."
-                  : "Send request"}
+                {hasRequested
+                  ? "Request sent"
+                  : requestingUserId === match.userId
+                    ? "Sending..."
+                    : "Send request"}
               </button>
             </div>
-          ))}
+          );
+        })}
         </div>
       )}
     </div>
