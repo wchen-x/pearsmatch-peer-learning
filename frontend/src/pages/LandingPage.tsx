@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 
 export default function LandingPage() {
+  const isLoggedIn = Boolean(localStorage.getItem("token"));
+
   return (
     <div className="space-y-12">
       <section className="grid items-center gap-8 py-12 md:grid-cols-2">
@@ -19,19 +21,30 @@ export default function LandingPage() {
           </p>
 
           <div className="mt-8 flex gap-3">
-            <Link
-              to="/register"
-              className="rounded-lg bg-green-600 px-5 py-3 font-medium text-white"
-            >
-              Get started
-            </Link>
+            {isLoggedIn ? (
+              <Link
+                to="/dashboard"
+                className="rounded-lg bg-green-600 px-5 py-3 font-medium text-white"
+              >
+                Go to dashboard
+              </Link>
+            ) : (
+              <>
+                <Link
+                  to="/register"
+                  className="rounded-lg bg-green-600 px-5 py-3 font-medium text-white"
+                >
+                  Get started
+                </Link>
 
-            <Link
-              to="/login"
-              className="rounded-lg border px-5 py-3 font-medium"
-            >
-              Login
-            </Link>
+                <Link
+                  to="/login"
+                  className="rounded-lg border px-5 py-3 font-medium"
+                >
+                  Login
+                </Link>
+              </>
+            )}
           </div>
         </div>
 

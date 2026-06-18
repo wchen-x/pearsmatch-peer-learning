@@ -66,6 +66,25 @@ export default function SkillsPage() {
     }
   }
 
+  async function deleteSkill(skillId: number) {
+    setError("");
+    setMessage("");
+
+    try {
+      await apiRequest<void>(`/api/me/skills/${skillId}`, {
+        method: "DELETE",
+      });
+
+      setSkills((currentSkills) =>
+        currentSkills.filter((skill) => skill.id !== skillId)
+      );
+
+      setMessage("Skill removed successfully.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to remove skill");
+    }
+  }
+
   const teachingSkills = skills.filter((skill) => skill.type === "TEACH");
   const learningSkills = skills.filter((skill) => skill.type === "LEARN");
 
@@ -158,12 +177,21 @@ export default function SkillsPage() {
               {teachingSkills.map((skill) => (
                 <li
                   key={skill.id}
-                  className="rounded-lg border px-3 py-2 text-sm"
+                  className="flex items-center justify-between rounded-lg border px-3 py-2 text-sm"
                 >
-                  <span className="font-medium capitalize">
-                    {skill.skillName}
-                  </span>{" "}
-                  <span className="text-gray-500">- {skill.level}</span>
+                  <div>
+                    <span className="font-medium capitalize">
+                      {skill.skillName}
+                    </span>{" "}
+                    <span className="text-gray-500">- {skill.level}</span>
+                  </div>
+
+                  <button
+                    onClick={() => deleteSkill(skill.id)}
+                    className="text-sm font-medium text-red-600"
+                  >
+                    Remove
+                  </button>
                 </li>
               ))}
             </ul>
@@ -182,12 +210,21 @@ export default function SkillsPage() {
               {learningSkills.map((skill) => (
                 <li
                   key={skill.id}
-                  className="rounded-lg border px-3 py-2 text-sm"
+                  className="flex items-center justify-between rounded-lg border px-3 py-2 text-sm"
                 >
-                  <span className="font-medium capitalize">
-                    {skill.skillName}
-                  </span>{" "}
-                  <span className="text-gray-500">- {skill.level}</span>
+                  <div>
+                    <span className="font-medium capitalize">
+                      {skill.skillName}
+                    </span>{" "}
+                    <span className="text-gray-500">- {skill.level}</span>
+                  </div>
+
+                  <button
+                    onClick={() => deleteSkill(skill.id)}
+                    className="text-sm font-medium text-red-600"
+                  >
+                    Remove
+                  </button>
                 </li>
               ))}
             </ul>

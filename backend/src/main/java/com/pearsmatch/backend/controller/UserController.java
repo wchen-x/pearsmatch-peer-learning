@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -157,5 +159,22 @@ public class UserController {
             .stream()
             .map(entry -> new MatchResponse(entry.getKey(), entry.getValue()))
             .toList();
+    }
+
+    @DeleteMapping("/me/skills/{skillId}")
+    public void deleteCurrentUserSkill(
+        @RequestHeader("Authorization") String authHeader,
+        @PathVariable Long skillId
+    ) {
+        User user = getUserFromAuthHeader(authHeader);
+
+        UserSkill userSkill = userSkillRepository.findById(skillId)
+            .orElseThrow(() -> new RuntimeException("Skill not found"));
+
+        if (!userSkill.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("You can only delete your own skills");
+        }
+
+        userSkillRepository.delete(userSkill);
     }
 }
