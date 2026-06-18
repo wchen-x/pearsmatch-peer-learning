@@ -29,6 +29,7 @@ export default function RegisterPage() {
       });
 
       localStorage.setItem("token", data.token);
+      window.dispatchEvent(new Event("authChange"));
       navigate("/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed");
